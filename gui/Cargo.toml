@@ -4,10 +4,10 @@ version = "0.5.0"
 edition = "2021"
 
 [dependencies]
-eframe = "0.28"
-egui_file = "0.18"
-sysinfo = "0.31"
+eframe = "0.31.1"
+egui_file = "0.22.1"
+sysinfo = "0.33"
 dll-syringe = { workspace = true, features = ["rpc-payload", "payload-utils"]}
-protocol = { workspace = true }
-thiserror = { workspace = true }
-rfd = "0.14"
+protocol.workspace = true
+thiserror.workspace = true
+rfd = "0.15"

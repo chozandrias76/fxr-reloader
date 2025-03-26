@@ -10,7 +10,7 @@ resolver = "2"
 [workspace.dependencies]
 dll-syringe = "0.15"
 protocol = { path = "protocol/" }
-thiserror = "1"
+thiserror = "2"
 
 [profile.release]
 strip = true

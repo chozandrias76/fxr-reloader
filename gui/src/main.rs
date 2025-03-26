@@ -21,7 +21,8 @@ fn main() {
         get_project_title().as_str(),
         native_options,
         Box::new(|cc| Ok(Box::new(FxrReloaderApp::new(cc)))),
-    ).expect("Could not run egui app");
+    )
+    .expect("Could not run egui app");
 }
 
 #[derive(Default)]
@@ -47,7 +48,7 @@ impl FxrReloaderApp {
     fn reload_selected_fxrs(&mut self) {
         let result = game::call_fxr_patch(
             self.selected_process.as_ref().unwrap().pid,
-            &self.selected_files
+            &self.selected_files,
         );
 
         match result {
@@ -79,26 +80,38 @@ impl eframe::App for FxrReloaderApp {
                     })
                 });
 
-            if ui.add_enabled(
-                self.selected_process.is_some(),
-                egui::Button::new("Patch FXR")
-            ).clicked() {
+            if ui
+                .add_enabled(
+                    self.selected_process.is_some(),
+                    egui::Button::new("Patch FXR"),
+                )
+                .clicked()
+            {
                 if let Some(fxrs) = rfd::FileDialog::new()
                     .add_filter("FXR Files", &["fxr"])
-                    .pick_files() {
-
-                    self.selected_files = fxrs.iter()
-                        .map(|f| f.to_path_buf())
-                        .collect();
-
+                    .pick_files()
+                {
+                    self.selected_files = fxrs.iter().map(|f| f.to_path_buf()).collect();
+                    self.log_entries.push(format!(
+                        "Selected {} FXR files",
+                        self.selected_files.len()
+                    ));
+                    self.log_entries.push(format!(
+                        "Selected process: {} ({})",
+                        self.selected_process.as_ref().unwrap().name,
+                        self.selected_process.as_ref().unwrap().pid.as_u32()
+                    ));
                     self.reload_selected_fxrs();
                 }
             }
 
-            if ui.add_enabled(
-                self.selected_process.is_some() && !self.selected_files.is_empty(),
-                egui::Button::new("Reload last reloaded FXRs")
-            ).clicked() {
+            if ui
+                .add_enabled(
+                    self.selected_process.is_some() && !self.selected_files.is_empty(),
+                    egui::Button::new("Reload last reloaded FXRs"),
+                )
+                .clicked()
+            {
                 self.reload_selected_fxrs();
             }
 

@@ -16,7 +16,7 @@ pub(crate) enum RunningGame {
 /// Figures out what game we're currently running inside of.
 pub(crate) fn detect_running_game() -> Result<RunningGame, GameDetectionError> {
     let header = unsafe {
-        let handle = windows::Win32::System::LibraryLoader::GetModuleHandleA(std::ptr::null().into())
+        let handle = windows::Win32::System::LibraryLoader::GetModuleHandleA(windows::core::PCSTR(std::ptr::null()))
             .map_err(|_| GameDetectionError::NoMainModuleHandle)?;
 
         PeView::module(handle.0 as *const u8)

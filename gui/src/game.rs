@@ -1,5 +1,7 @@
+use std::env;
 use std::fs;
 use std::path::Path;
+use std::path::PathBuf;
 use dll_syringe::error::EjectError;
 use dll_syringe::error::LoadProcedureError;
 use dll_syringe::rpc::PayloadRpcError;
@@ -36,6 +38,17 @@ pub(crate) fn get_running_games() -> Vec<GameProcess> {
     processes
 }
 
+fn get_dll_path() -> PathBuf {
+    // Get the current executable's path
+    let exe_path = env::current_exe().expect("Failed to get current executable path");
+
+    // Merge the executable's directory with the relative DLL path
+    exe_path
+        .parent() // Get the directory of the executable
+        .expect("Executable has no parent directory")
+        .join(AGENT_DLL_NAME)
+}
+
 #[derive(Error, Debug)]
 pub(crate) enum PatchError {
     #[error("Failed to find specified process.")]
@@ -70,7 +83,8 @@ pub(crate) fn call_fxr_patch<P: AsRef<Path>>(
 
     // Obtain an instance of the agent DLL in the remote process
     let syringe = Syringe::for_process(target_process);
-    let agent_module = syringe.find_or_inject(AGENT_DLL_NAME)?;
+    
+    let agent_module = syringe.find_or_inject(get_dll_path())?;
 
     // Read the specified FXR file
     let file_contents = files.iter()
